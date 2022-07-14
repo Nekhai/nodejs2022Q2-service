@@ -9,6 +9,8 @@ import {
   UsePipes,
   ValidationPipe,
   HttpCode,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ArtistsService } from '../services/artists.service';
 import { Artist } from '../interfaces/artists.interface';
@@ -26,7 +28,10 @@ export class ArtistsController {
 
   @Get(':id')
   getOne(@Param('id') artistId: string): Artist {
-    return this.artistsServices.getArtist(artistId);
+    const artist = this.artistsServices.getArtist(artistId);
+
+    if (artist) return artist;
+    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
   }
 
   @Post()
@@ -42,7 +47,13 @@ export class ArtistsController {
     @Body() updateArtistdDto: UpdateArtistdDto,
     @Param('id') artistId: string,
   ) {
-    return this.artistsServices.updateArtist(updateArtistdDto, artistId);
+    const artist = this.artistsServices.updateArtist(
+      updateArtistdDto,
+      artistId,
+    );
+
+    if (artist) return artist;
+    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')

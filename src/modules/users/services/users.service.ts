@@ -60,7 +60,7 @@ export class UsersService {
       if (userIndex === -1)
         throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
 
-      db.users.splice(userIndex, 1);
+      return db.users.splice(userIndex, 1);
     } else {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
