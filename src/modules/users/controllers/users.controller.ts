@@ -20,7 +20,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { UserEntity } from '../users.serialize';
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -55,13 +55,14 @@ export class UsersController {
   @Put(':id')
   @UsePipes(ValidationPipe)
   update(
-    @Body() updatePassword: UpdatePasswordDto,
+    @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id') UserId: string,
   ) {
-    return this.usersService.updatePassword(updatePassword, UserId);
+    return this.usersService.updatePassword(updatePasswordDto, UserId);
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id') UserId: string) {
     return this.usersService.removeUser(UserId);
   }

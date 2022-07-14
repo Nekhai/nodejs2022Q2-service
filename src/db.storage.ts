@@ -17,5 +17,20 @@ export const db = {
       updatedAt: 1657700046,
     },
   ],
-  tracks: [],
+  tracks: [
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e289a',
+      name: 'new track',
+      artistId: null,
+      albumId: null,
+      duration: 5,
+    },
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e289d',
+      name: 'mega track',
+      artistId: null,
+      albumId: null,
+      duration: 4,
+    },
+  ],
 };
