@@ -6,20 +6,16 @@ import {
   IsUUID,
 } from 'class-validator';
 
-export class CreateTrackDto {
+export class CreateAlbumDto {
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @IsNotEmpty()
+  @IsNumber()
+  year: number;
+
   @IsOptional()
   @IsUUID()
   artistId: string | null;
-
-  @IsOptional()
-  @IsUUID()
-  albumId: string | null;
-
-  @IsNotEmpty()
-  @IsNumber()
-  duration: number;
 }

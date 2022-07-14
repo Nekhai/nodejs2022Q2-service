@@ -45,6 +45,19 @@ export const db = {
       grammy: false,
     },
   ],
-  albums: [],
+  albums: [
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e288c',
+      name: 'mega alb',
+      year: 1988,
+      artistId: '6b6e261f-3dbe-45ae-9ac4-6f6da02e287b',
+    },
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e288d',
+      name: 'world',
+      year: 2001,
+      artistId: '6b6e261f-3dbe-45ae-9ac4-6f6da02e287b',
+    },
+  ],
   favorites: [],
 };

@@ -1,19 +1,15 @@
 import { IsOptional, IsString, IsNumber, IsUUID } from 'class-validator';
 
-export class UpdateTrackdDto {
+export class UpdateAlbumDto {
   @IsOptional()
   @IsString()
   name: string;
 
   @IsOptional()
+  @IsNumber()
+  year: number;
+
+  @IsOptional()
   @IsUUID()
   artistId: string | null;
-
-  @IsOptional()
-  @IsUUID()
-  albumId: string | null;
-
-  @IsOptional()
-  @IsNumber()
-  duration: number;
 }
