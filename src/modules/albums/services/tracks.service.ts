@@ -5,6 +5,7 @@ import { db } from 'src/db.storage';
 import { Track } from '../interfaces/tracks.interface';
 import { CreateTrackDto } from '../dto/create-track.dto';
 import { UpdateTrackdDto } from '../dto/update-track.dto';
+// import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Injectable()
 export class TracksService {
@@ -36,8 +37,8 @@ export class TracksService {
       if (trackIndex === -1)
         throw new HttpException("Track doesn't exist", HttpStatus.NOT_FOUND);
 
-      const currentTrack = db.tracks[trackIndex];
-      const updatedTrack = Object.assign(currentTrack, body);
+      const track = db.tracks[trackIndex];
+      const updatedTrack = Object.assign(track, body);
 
       db.tracks[trackIndex] = updatedTrack;
 

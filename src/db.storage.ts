@@ -33,4 +33,18 @@ export const db = {
       duration: 4,
     },
   ],
+  artists: [
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e287b',
+      name: 'Linkin park',
+      grammy: true,
+    },
+    {
+      id: '6b6e261f-3dbe-45ae-9ac4-6f6da02e288b',
+      name: 'Ocean',
+      grammy: false,
+    },
+  ],
+  albums: [],
+  favorites: [],
 };

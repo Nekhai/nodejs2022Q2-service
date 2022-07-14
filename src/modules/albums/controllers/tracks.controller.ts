@@ -8,12 +8,17 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  HttpException,
+  HttpStatus,
   HttpCode,
 } from '@nestjs/common';
 import { TracksService } from '../services/tracks.service';
 import { Track } from '../interfaces/tracks.interface';
 import { CreateTrackDto } from '../dto/create-track.dto';
 import { UpdateTrackdDto } from '../dto/update-track.dto';
+// import { UpdatePasswordDto } from '../dto/update-password.dto';
 
 @Controller('track')
 export class TracksController {
@@ -25,8 +30,8 @@ export class TracksController {
   }
 
   @Get(':id')
-  getOne(@Param('id') trackId: string): Track {
-    return this.tracksService.getTrack(trackId);
+  getOne(@Param('id') TrackId: string): Track {
+    return this.tracksService.getTrack(TrackId);
   }
 
   @Post()
@@ -40,14 +45,14 @@ export class TracksController {
   @UsePipes(ValidationPipe)
   update(
     @Body() updateTrackdDto: UpdateTrackdDto,
-    @Param('id') trackId: string,
+    @Param('id') TrackId: string,
   ) {
-    return this.tracksService.updateTrack(updateTrackdDto, trackId);
+    return this.tracksService.updateTrack(updateTrackdDto, TrackId);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') trackId: string) {
-    return this.tracksService.removeTrack(trackId);
+  remove(@Param('id') TrackId: string) {
+    return this.tracksService.removeTrack(TrackId);
   }
 }
