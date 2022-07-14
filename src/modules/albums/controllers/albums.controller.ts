@@ -8,10 +8,6 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  HttpException,
-  HttpStatus,
   HttpCode,
 } from '@nestjs/common';
 import { AlbumsService } from '../services/albums.service';
@@ -24,7 +20,7 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Get()
-  getTracks(): Album[] {
+  getAlbums(): Album[] {
     return this.albumsService.getAlbums();
   }
 

@@ -20,7 +20,7 @@ export class ArtistsController {
   constructor(private readonly artistsServices: ArtistsService) {}
 
   @Get()
-  getTracks(): Artist[] {
+  getArtists(): Artist[] {
     return this.artistsServices.getArtists();
   }
 

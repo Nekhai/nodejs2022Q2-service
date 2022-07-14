@@ -59,5 +59,9 @@ export const db = {
       artistId: '6b6e261f-3dbe-45ae-9ac4-6f6da02e287b',
     },
   ],
-  favorites: [],
+  favorites: {
+    artists: ['6b6e261f-3dbe-45ae-9ac4-6f6da02e288b'],
+    albums: ['6b6e261f-3dbe-45ae-9ac4-6f6da02e288c'],
+    tracks: ['6b6e261f-3dbe-45ae-9ac4-6f6da02e289d'],
+  },
 };
