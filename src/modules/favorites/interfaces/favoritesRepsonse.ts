@@ -1,26 +1,8 @@
+import { Album } from 'src/modules/albums/interfaces/albums.interface';
+import { Track } from 'src/modules/tracks/interfaces/tracks.interface';
+import { Artist } from 'src/modules/artists/interfaces/artists.interface';
 export interface FavoritesRepsonse {
   artists: Artist[];
   albums: Album[];
   tracks: Track[];
-}
-
-interface Artist {
-  id: string;
-  name: string;
-  grammy: boolean;
-}
-
-interface Track {
-  id: string;
-  name: string;
-  artistId: string | null;
-  albumId: string | null;
-  duration: number;
-}
-
-interface Album {
-  id: string;
-  name: string;
-  year: number;
-  artistId: string | null;
 }

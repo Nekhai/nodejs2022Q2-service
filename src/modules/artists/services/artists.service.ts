@@ -57,6 +57,12 @@ export class ArtistsService {
         throw new HttpException("Artist doesn't exist", HttpStatus.NOT_FOUND);
 
       db.artists.splice(artistIndex, 1);
+
+      db.tracks.forEach((track) => {
+        if (track.artistId === id) {
+          track.artistId = null;
+        }
+      });
     } else {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }

@@ -57,6 +57,17 @@ export class AlbumsService {
         throw new HttpException("Album doesn't exist", HttpStatus.NOT_FOUND);
 
       db.albums.splice(albumIndex, 1);
+
+      db.tracks.forEach((track) => {
+        if (track.albumId === id) {
+          track.albumId = null;
+        }
+      });
+
+      const albumFavIndex = db.favorites.albums.indexOf(id);
+      if (albumFavIndex !== -1) {
+        db.favorites.albums.splice(albumFavIndex, 1);
+      }
     } else {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
     }
