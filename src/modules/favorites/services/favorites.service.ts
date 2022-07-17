@@ -58,8 +58,13 @@ export class FavoritesService {
 
   addTrack(id: string): Track {
     if (validate(id)) {
-      if (db.favorites.tracks.indexOf(id) === -1) {
-        db.favorites.tracks.push(id);
+      db.favorites.tracks.push(id);
+
+      if (!db.tracks.find((track) => track.id === id)) {
+        throw new HttpException(
+          'Entity absence',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
       }
 
       return db.tracks.find((track) => track.id === id);
@@ -74,7 +79,6 @@ export class FavoritesService {
 
       if (trackIndex !== -1) {
         db.favorites.tracks.splice(trackIndex, 1);
-        console.log(db.favorites.tracks);
       } else {
         throw new HttpException("Track doesn't exist", HttpStatus.NOT_FOUND);
       }

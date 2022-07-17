@@ -45,20 +45,24 @@ export class UsersController {
   @Post()
   @HttpCode(201)
   @UsePipes(ValidationPipe)
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto): User {
     const user = this.usersService.createUser(createUserDto);
 
     if (user) return new UserEntity(user);
     else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
   @UsePipes(ValidationPipe)
   update(
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id') UserId: string,
-  ) {
-    return this.usersService.updatePassword(updatePasswordDto, UserId);
+  ): User {
+    const user = this.usersService.updatePassword(updatePasswordDto, UserId);
+
+    if (user) return new UserEntity(user);
+    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')

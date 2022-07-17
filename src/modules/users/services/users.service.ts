@@ -32,10 +32,11 @@ export class UsersService {
     return db.users[addUser - 1];
   }
 
-  updatePassword(body: UpdatePasswordDto, id: string) {
+  updatePassword(body: UpdatePasswordDto, id: string): User {
     if (validate(id)) {
       const { oldPassword, newPassword } = body;
       const userIndex = db.users.findIndex((user) => user.id === id);
+      const user = db.users[userIndex];
 
       if (userIndex === -1)
         throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
@@ -45,8 +46,13 @@ export class UsersService {
       if (userPassword !== oldPassword) {
         throw new HttpException('Passowrd is wrong', HttpStatus.FORBIDDEN);
       } else {
-        db.users[userIndex].password = newPassword;
-        return;
+        if (newPassword) {
+          user.password = newPassword;
+          user.updatedAt = Math.floor(Date.now() / 1000) + 1;
+          user.version = db.users[userIndex].version + 1;
+
+          return db.users[userIndex];
+        }
       }
     } else {
       throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);

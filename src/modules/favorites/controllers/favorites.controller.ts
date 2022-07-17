@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  HttpCode,
-  UsePipes,
-  Body,
-  ValidationPipe,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, HttpCode, Param, Delete } from '@nestjs/common';
 import { FavoritesRepsonse } from '../interfaces/favoritesRepsonse';
 import { FavoritesService } from '../services/favorites.service';
 
