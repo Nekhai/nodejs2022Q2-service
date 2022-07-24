@@ -12,6 +12,8 @@ COPY .env ./
 
 COPY tsconfig.json ./
 
+COPY tsconfig.build.json ./
+
 EXPOSE ${PORT}
 
 CMD [ "npm", "run", "start:dev" ]
