@@ -7,7 +7,7 @@ services:
       context: .
     restart: always
     networks:
-      - node_postgres_network
+      - nestjs_postgres_network
     ports: 
       - ${PORT}:${PORT}
     env_file:
@@ -25,10 +25,9 @@ services:
     # command: -p ${POSTGRES_PORT}
     restart: always
     networks:
-      - node_postgres_network
+      - nestjs_postgres_network
     ports: 
-      # - ${POSTGRES_PORT}:${POSTGRES_PORT}
-      - "5001:5432"
+      - ${POSTGRES_PORT}:5432
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -37,6 +36,6 @@ services:
       - .:/docker-entrypoint-initdb.d
 
 networks:
-  node_postgres_network:
+  nestjs_postgres_network:
 
   # host:"postgres"
