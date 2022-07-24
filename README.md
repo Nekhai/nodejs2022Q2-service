@@ -27,6 +27,36 @@ After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 For more information about OpenAPI/Swagger please visit https://swagger.io/.
 
+## Docker
+
+```
+Create image of PostgreSQL database
+
+docker build -t db-image-name ./db/
+
+```
+
+Create image of application
+
+docker build -t app-image-app-name .
+
+```
+run PostgreSQL database image
+
+docker run --name postgres -e POSTGRES_PASSWORD=mysecretpassword -d db-image-name
+
+```
+
+run application image
+
+docker run --name nest-js -d app-image-app-name
+
+```
+run multi-container application
+
+docker compose up
+```
+
 ## Testing
 
 After application running open new terminal and enter:
