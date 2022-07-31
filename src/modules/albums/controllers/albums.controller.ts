@@ -9,8 +9,6 @@ import {
   UsePipes,
   ValidationPipe,
   HttpCode,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { AlbumsService } from '../services/albums.service';
 import { Album } from '../interfaces/albums.interface';
@@ -22,40 +20,34 @@ export class AlbumsController {
   constructor(private readonly albumsService: AlbumsService) {}
 
   @Get()
-  getAlbums(): Album[] {
+  async getAlbums(): Promise<Album[]> {
     return this.albumsService.getAlbums();
   }
 
   @Get(':id')
-  getOne(@Param('id') albumId: string): Album {
-    const album = this.albumsService.getAlbum(albumId);
-
-    if (album) return album;
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  async getOne(@Param('id') albumId: string): Promise<Album> {
+    return await this.albumsService.getAlbum(albumId);
   }
 
   @Post()
   @HttpCode(201)
   @UsePipes(ValidationPipe)
-  create(@Body() createAlbumDto: CreateAlbumDto) {
+  async create(@Body() createAlbumDto: CreateAlbumDto): Promise<Album> {
     return this.albumsService.createAlbum(createAlbumDto);
   }
 
   @Put(':id')
   @UsePipes(ValidationPipe)
-  update(
+  async update(
     @Body() updateAlbumdDto: UpdateAlbumDto,
     @Param('id') albumId: string,
-  ) {
-    const album = this.albumsService.updateAlbum(updateAlbumdDto, albumId);
-
-    if (album) return album;
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  ): Promise<Album> {
+    return await this.albumsService.updateAlbum(updateAlbumdDto, albumId);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') albumId: string) {
-    return this.albumsService.removeAlbum(albumId);
+  async remove(@Param('id') albumId: string): Promise<void> {
+    return await this.albumsService.removeAlbum(albumId);
   }
 }

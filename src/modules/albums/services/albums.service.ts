@@ -1,75 +1,73 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4, validate } from 'uuid';
 
-import { db } from 'src/db.storage';
 import { Album } from '../interfaces/albums.interface';
 import { CreateAlbumDto } from '../dto/create-albums.dto';
 import { UpdateAlbumDto } from '../dto/update-albums.dto';
+import { AlbumEntity } from '../entities/albums.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AlbumsService {
-  getAlbums(): Album[] {
-    return db.albums;
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private albumRepository: Repository<AlbumEntity>,
+  ) {}
+
+  async getAlbums(): Promise<Album[]> {
+    return await this.albumRepository.find();
   }
 
-  getAlbum(id: string) {
-    if (validate(id)) {
-      return db.albums.find((album) => album.id === id);
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
-    }
-  }
+  async getAlbum(albumId: string): Promise<Album> {
+    if (!validate(albumId)) throw new BadRequestException('Invalid Id');
 
-  createAlbum(body: CreateAlbumDto) {
-    const addAlbum = db.albums.push({
-      id: uuidv4(),
-      ...body,
+    const album = await this.albumRepository.findOne({
+      where: { id: albumId },
     });
 
-    return db.albums[addAlbum - 1];
+    if (!album) throw new NotFoundException("User doesn't exist");
+
+    return album;
   }
 
-  updateAlbum(body: UpdateAlbumDto, id: string) {
-    if (validate(id)) {
-      const albumIndex = db.albums.findIndex((album) => album.id === id);
+  async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
+    const addAlbum = this.albumRepository.create({
+      id: uuidv4(),
+      ...createAlbumDto,
+    });
 
-      if (albumIndex === -1)
-        throw new HttpException("Album doesn't exist", HttpStatus.NOT_FOUND);
-
-      const currentAlbum = db.albums[albumIndex];
-      const updatedAlbum = Object.assign(currentAlbum, body);
-
-      db.albums[albumIndex] = updatedAlbum;
-
-      return updatedAlbum;
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
-    }
+    return await this.albumRepository.save(addAlbum);
   }
 
-  removeAlbum(id: string) {
-    if (validate(id)) {
-      const albumIndex: number = db.albums.findIndex(
-        (album) => album.id === id,
-      );
+  async updateAlbum(
+    updateAlbumDto: UpdateAlbumDto,
+    albumId: string,
+  ): Promise<Album> {
+    if (!validate(albumId)) throw new BadRequestException('Invalid Id');
 
-      if (albumIndex === -1)
-        throw new HttpException("Album doesn't exist", HttpStatus.NOT_FOUND);
+    const updateAlbum = await this.albumRepository.findOne({
+      where: { id: albumId },
+    });
 
-      db.albums.splice(albumIndex, 1);
+    if (!updateAlbum) throw new NotFoundException("Track doesn't exist");
 
-      db.tracks.forEach((track) => {
-        if (track.albumId === id) {
-          track.albumId = null;
-        }
-      });
+    const updatedTrack = Object.assign(updateAlbum, updateAlbumDto);
 
-      const albumFavIndex = db.favorites.albums.indexOf(id);
-      if (albumFavIndex !== -1) {
-        db.favorites.albums.splice(albumFavIndex, 1);
-      }
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
+    return await this.albumRepository.save(updateAlbum);
+  }
+
+  async removeAlbum(albumId: string) {
+    if (!validate(albumId)) throw new BadRequestException('Invalid Id');
+
+    const result = await this.albumRepository.delete(albumId);
+
+    if (result.affected === 0) {
+      throw new NotFoundException("Track doesn't exist");
     }
   }
 }
