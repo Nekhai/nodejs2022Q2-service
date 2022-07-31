@@ -9,8 +9,6 @@ import {
   UsePipes,
   ValidationPipe,
   HttpCode,
-  HttpException,
-  HttpStatus,
 } from '@nestjs/common';
 import { ArtistsService } from '../services/artists.service';
 import { Artist } from '../interfaces/artists.interface';
@@ -22,43 +20,34 @@ export class ArtistsController {
   constructor(private readonly artistsServices: ArtistsService) {}
 
   @Get()
-  getArtists(): Artist[] {
-    return this.artistsServices.getArtists();
+  async getArtists(): Promise<Artist[]> {
+    return await this.artistsServices.getArtists();
   }
 
   @Get(':id')
-  getOne(@Param('id') artistId: string): Artist {
-    const artist = this.artistsServices.getArtist(artistId);
-
-    if (artist) return artist;
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  async getOne(@Param('id') artistId: string): Promise<Artist> {
+    return await this.artistsServices.getArtist(artistId);
   }
 
   @Post()
   @HttpCode(201)
   @UsePipes(ValidationPipe)
-  create(@Body() createArtistDto: CreateArtistDto) {
+  async create(@Body() createArtistDto: CreateArtistDto): Promise<Artist> {
     return this.artistsServices.createArtist(createArtistDto);
   }
 
   @Put(':id')
   @UsePipes(ValidationPipe)
-  update(
+  async update(
     @Body() updateArtistdDto: UpdateArtistdDto,
     @Param('id') artistId: string,
-  ) {
-    const artist = this.artistsServices.updateArtist(
-      updateArtistdDto,
-      artistId,
-    );
-
-    if (artist) return artist;
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  ): Promise<Artist> {
+    return await this.artistsServices.updateArtist(updateArtistdDto, artistId);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') artistId: string) {
-    return this.artistsServices.removeArtist(artistId);
+  async remove(@Param('id') artistId: string): Promise<void> {
+    return await this.artistsServices.removeArtist(artistId);
   }
 }
