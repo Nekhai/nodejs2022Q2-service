@@ -9,14 +9,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  // @Get(':id')
-  // getOne(@Param('id') id: string): string {
-  //   return id;
-  // }
-
-  // @Post()
-  // create(@Body() body) {
-  //   return body;
-  // }
 }

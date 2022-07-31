@@ -1,74 +1,85 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { v4 as uuidv4, validate } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { db } from 'src/db.storage';
-import { User } from 'src/modules/users/interfaces/users.interface';
+import { User } from '../interfaces/users.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  getUsers(): User[] {
-    return db.users;
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
+
+  async getUsers(): Promise<User[]> {
+    const users = await this.userRepository.find();
+
+    return users.map((user) => user.toResponse());
   }
 
-  getUser(id: string) {
-    if (validate(id)) {
-      return db.users.find((user) => user.id === id);
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
-    }
+  async getUser(userId: string): Promise<User> {
+    if (!validate(userId)) throw new BadRequestException('Invalid Id');
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundException("User doesn't exist");
+
+    return user.toResponse();
   }
 
-  createUser(body: CreateUserDto) {
-    const addUser = db.users.push({
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const addUser = this.userRepository.create({
       id: uuidv4(),
       version: 1,
       createdAt: Math.floor(Date.now() / 1000),
       updatedAt: Math.floor(Date.now() / 1000),
-      ...body,
+      ...createUserDto,
     });
 
-    return db.users[addUser - 1];
+    return (await this.userRepository.save(addUser)).toResponse();
   }
 
-  updatePassword(body: UpdatePasswordDto, id: string): User {
-    if (validate(id)) {
-      const { oldPassword, newPassword } = body;
-      const userIndex = db.users.findIndex((user) => user.id === id);
-      const user = db.users[userIndex];
+  async updatePassword(
+    updatePasswordDto: UpdatePasswordDto,
+    userId: string,
+  ): Promise<User> {
+    if (!validate(userId)) throw new BadRequestException('Invalid Id');
 
-      if (userIndex === -1)
-        throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+    const { oldPassword, newPassword } = updatePasswordDto;
 
-      const userPassword = db.users[userIndex].password;
+    const updateUser = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
-      if (userPassword !== oldPassword) {
-        throw new HttpException('Passowrd is wrong', HttpStatus.FORBIDDEN);
-      } else {
-        if (newPassword) {
-          user.password = newPassword;
-          user.updatedAt = Math.floor(Date.now() / 1000) + 1;
-          user.version = db.users[userIndex].version + 1;
+    if (!updateUser) throw new NotFoundException("User doesn't exist");
 
-          return db.users[userIndex];
-        }
-      }
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
-    }
+    if (updateUser.password !== oldPassword)
+      throw new ForbiddenException('Passowrd is wrong');
+
+    updateUser.password = newPassword;
+    updateUser.updatedAt = Math.floor(Date.now() / 1000) + 1;
+    updateUser.createdAt = +updateUser.createdAt;
+    updateUser.version++;
+
+    return (await this.userRepository.save(updateUser)).toResponse();
   }
 
-  removeUser(id: string) {
-    if (validate(id)) {
-      const userIndex: number = db.users.findIndex((user) => user.id === id);
+  async removeUser(userId: string): Promise<void> {
+    if (!validate(userId)) throw new BadRequestException('Invalid Id');
 
-      if (userIndex === -1)
-        throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+    const result = await this.userRepository.delete(userId);
 
-      return db.users.splice(userIndex, 1);
-    } else {
-      throw new HttpException('Invalid Id', HttpStatus.BAD_REQUEST);
+    if (result.affected === 0) {
+      throw new NotFoundException("User doesn't exist");
     }
   }
 }

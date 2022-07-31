@@ -8,66 +8,46 @@ import {
   Delete,
   UsePipes,
   ValidationPipe,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  HttpException,
-  HttpStatus,
   HttpCode,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { User } from 'src/modules/users/interfaces/users.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
-import { UserEntity } from '../users.serialize';
 
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  getUsers(): User[] {
-    const users = this.usersService.getUsers();
-
-    return users.map((user) => new UserEntity(user));
+  async getUsers(): Promise<User[]> {
+    return await this.usersService.getUsers();
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  getOne(@Param('id') UserId: string): UserEntity {
-    const user = this.usersService.getUser(UserId);
-
-    if (user) return new UserEntity(user);
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  async getOne(@Param('id') UserId: string): Promise<User> {
+    return await this.usersService.getUser(UserId);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @HttpCode(201)
   @UsePipes(ValidationPipe)
-  create(@Body() createUserDto: CreateUserDto): User {
-    const user = this.usersService.createUser(createUserDto);
-
-    if (user) return new UserEntity(user);
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    return await this.usersService.createUser(createUserDto);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':id')
   @UsePipes(ValidationPipe)
-  update(
+  async update(
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id') UserId: string,
-  ): User {
-    const user = this.usersService.updatePassword(updatePasswordDto, UserId);
-
-    if (user) return new UserEntity(user);
-    else throw new HttpException("User doesn't exist", HttpStatus.NOT_FOUND);
+  ): Promise<User> {
+    return await this.usersService.updatePassword(updatePasswordDto, UserId);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') UserId: string) {
-    return this.usersService.removeUser(UserId);
+  async remove(@Param('id') UserId: string): Promise<void> {
+    return await this.usersService.removeUser(UserId);
   }
 }
